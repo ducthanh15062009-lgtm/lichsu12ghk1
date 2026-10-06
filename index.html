@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc Nghiệm & Đúng/Sai Lịch Sử 12</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background-color: var(--secondary-color);
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            margin-bottom: 25px;
+        }
+
+        .question-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+        }
+
+        .option-btn.correct {
+            background-color: #d4edda;
+            border-color: var(--success-color);
+            color: #155724;
+            font-weight: bold;
+        }
+
+        .option-btn.wrong {
+            background-color: #f8d7da;
+            border-color: var(--danger-color);
+            color: #721c24;
+        }
+
+        /* Style cho câu hỏi Đúng / Sai */
+        .tf-item {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .tf-text {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .tf-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tf-btn {
+            padding: 6px 16px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background-color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .tf-btn.selected-true {
+            background-color: #e3f2fd;
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .tf-btn.selected-false {
+            background-color: #fff3e0;
+            border-color: #f39c12;
+            color: #d35400;
+        }
+
+        .tf-btn.correct {
+            background-color: #d4edda !important;
+            border-color: var(--success-color) !important;
+            color: #155724 !important;
+        }
+
+        .tf-btn.wrong {
+            background-color: #f8d7da !important;
+            border-color: var(--danger-color) !important;
+            color: #721c24 !important;
+        }
+
+        .tf-feedback {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            display: none;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .tf-feedback.correct {
+            background-color: #e8f8f5;
+            color: #117a65;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .tf-feedback.wrong {
+            background-color: #fdedec;
+            color: #78281f;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 12px 15px;
+            background-color: #e8f4f8;
+            border-left: 4px solid var(--secondary-color);
+            border-radius: 4px;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .score-board {
+            text-align: center;
+            display: none;
+        }
+
+        .score-board h2 {
+            color: var(--primary-color);
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Trắc Nghiệm Lịch Sử 12 (81 Câu)</h1>
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <div id="quiz-box">
+        <div class="question-card">
+            <div class="question-title" id="question-text">Câu hỏi sẽ hiển thị ở đây...</div>
+            <div id="answers-container"></div>
+            <div class="explanation" id="explanation-text"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="prev-btn" onclick="prevQuestion()" disabled>Câu trước</button>
+            <button class="btn" id="next-btn" onclick="nextQuestion()">Câu tiếp theo</button>
+        </div>
+    </div>
+
+    <div class="score-board" id="score-board">
+        <h2>KẾT QUẢ BÀI THI</h2>
+        <div class="score-number" id="final-score">0 / 81</div>
+        <p id="score-comment"></p>
+        <button class="btn" onclick="restartQuiz()">Làm lại từ đầu</button>
+    </div>
+</div>
+
+<script>
+const quizQuestions = [
+    // --- BỘ CÂU HỎI TRẮC NGHIỆM TỪ CÂU 1 ĐẾN CÂU 75 ---
+    { id: 1, type: "multiple", question: "Hội nghị I-an-ta (2-1945) có sự tham gia của nguyên thủ 3 quốc gia nào?", options: ["A. Liên Xô, Mỹ, Anh.", "B. Mỹ, Anh, Pháp.", "C. Liên Xô, Mỹ, Trung Quốc.", "D. Liên Xô, Anh, Pháp."], correct: 0, explanation: "Hội nghị I-an-ta (2-1945) được tổ chức tại Liên Xô với sự tham gia của 3 nguyên thủ đại diện cho 3 cường quốc đồng minh: Xta-lin (Liên Xô), Ru-zơ-ven (Mỹ), và Sơ-xin (Anh)." },
+    { id: 2, type: "multiple", question: "Một trong những quyết định quan trọng của Hội nghị I-an-ta (2-1945) là:", options: ["A. Xóa bỏ hoàn toàn chế độ chủ nghĩa thực dân trên toàn thế giới.", "B. Thành lập tổ chức Liên hợp quốc nhằm duy trì hòa bình và an ninh thế giới.", "C. Đưa toàn bộ quân đội Mỹ về nước ngay sau khi kết thúc chiến tranh.", "D. Thành lập Khối liên minh quân sự NATO."], correct: 1, explanation: "Hội nghị I-an-ta đã quyết định thành lập tổ chức Liên hợp quốc để giữ gìn hòa bình, an ninh và hợp tác quốc tế sau Chiến tranh thế giới thứ hai." },
+    { id: 3, type: "multiple", question: "Theo quy định của Hội nghị I-an-ta, vùng ảnh hưởng ở khu vực Đông Âu thuộc về quốc gia nào?", options: ["A. Mỹ.", "B. Anh.", "C. Liên Xô.", "D. Pháp."], correct: 2, explanation: "Hội nghị I-an-ta phân chia phạm vi ảnh hưởng ở châu Âu: Đông Âu thuộc phạm vi ảnh hưởng của Liên Xô, Tây Âu thuộc phạm vi ảnh hưởng của Mỹ và Anh." },
+    { id: 4, type: "multiple", question: "Trật tự thế giới được hình thành sau Chiến tranh thế giới thứ hai mang tên gọi là gì?", options: ["A. Trật tự thế giới Véc-xai - Oa-sinh-tơn.", "B. Trật tự thế giới hai cực I-an-ta.", "C. Trật tự thế giới đa cực.", "D. Trật tự thế giới đơn cực."], correct: 1, explanation: "Những thỏa thuận tại Hội nghị I-an-ta cùng các hội nghị sau đó đã trở thành khuôn khổ cho trật tự thế giới mới, thường gọi là Trật tự hai cực I-an-ta." },
+    { id: 5, type: "multiple", question: "Sự kiện nào đánh dấu sự khởi đầu của Chiến tranh lạnh giữa hai phe Tự do và Xã hội chủ nghĩa?", options: ["A. Thông điệp của Tổng thống Mỹ Tru-man tại Quốc hội Mỹ (3-1947).", "B. Sự ra đời của Khối quân sự NATO năm 1949.", "C. Sự ra đời của Tổ chức Hiệp ước Mát-xcơ-va.", "D. Cuộc chiến tranh Triều Tiên bùng nổ năm 1950."], correct: 0, explanation: "Tháng 3-1947, Thông điệp của Tổng thống Mỹ Tru-man khẳng định sự tồn tại của chủ nghĩa cộng sản là nguy cơ với Mỹ, đánh dấu sự khởi đầu của Chiến tranh lạnh." },
+    { id: 6, type: "multiple", question: "Tổ chức liên minh quân sự lớn nhất của các nước tư bản chủ nghĩa do Mỹ đứng đầu thành lập năm 1949 là:", options: ["A. ASEAN.", "B. NATO (Khối Bắc Đại Tây Dương).", "C. SEATO.", "D. CENTO."], correct: 1, explanation: "Tháng 4-1949, Mỹ cùng các nước Tây Âu thành lập Tổ chức Hiệp ước Bắc Đại Tây Dương (NATO) - liên minh quân sự lớn nhất của phe tư bản." },
+    { id: 7, type: "multiple", question: "Chiến tranh lạnh chính thức kết thúc vào thời gian nào?", options: ["A. Tháng 12 năm 1989.", "B. Tháng 12 năm 1991.", "C. Tháng 8 năm 1945.", "D. Tháng 7 năm 1995."], correct: 0, explanation: "Tháng 12-1989, trong cuộc gặp không chính thức tại đảo En-ta (Manta), hai Tổng thống M. Goóc-ba-chốp và G. Bu-xơ (cha) chính thức tuyên bố chấm dứt Chiến tranh lạnh." },
+    { id: 8, type: "multiple", question: "Sự kiện nào dẫn đến sự chấm dứt hoàn toàn của Trật tự hai cực I-an-ta?", options: ["A. Mở cửa bức tường Béc-lin (1989).", "B. Sự sụp đổ của Chế độ Xã hội chủ nghĩa ở Liên Xô và Đông Âu (1991).", "C. Mỹ rút quân khỏi Việt Nam (1973).", "D. Mở rộng thành viên của khối NATO."], correct: 1, explanation: "Tháng 12-1991, Liên bang Xô viết tan rã, dẫn đến sự sụp đổ hoàn toàn của Trật tự hai cực I-an-ta hình thành từ sau Chiến tranh thế giới thứ hai." },
+    { id: 9, type: "multiple", question: "Sau khi Trật tự hai cực I-an-ta sụp đổ, trật tự thế giới mới đang dần hình thành theo hướng nào?", options: ["A. Đơn cực.", "B. Đa cực.", "C. Hai cực mới.", "D. Vô cực."], correct: 1, explanation: "Sau Chiến tranh lạnh, trật tự thế giới mới đang hình thành theo xu hướng 'đa cực' với nhiều trung tâm kinh tế, chính trị lớn như Mỹ, EU, Nhật Bản, Trung Quốc, Nga..." },
+    { id: 10, type: "multiple", question: "Nước đầu tiên tuyên bố độc lập ở khu vực Đông Nam Á sau Chiến tranh thế giới thứ hai là:", options: ["A. Việt Nam.", "B. In-đô-nê-xi-a.", "C. Phi-lip-pin.", "D. Lào."], correct: 1, explanation: "In-đô-nê-xi-a là quốc gia đầu tiên ở Đông Nam Á tuyên bố độc lập vào ngày 17-8-1945, tiếp theo là Việt Nam (2-9-1945) và Lào (12-10-1945)." },
+    { id: 11, type: "multiple", question: "Năm 1960 được lịch sử ghi nhận là 'Năm châu Phi' vì lý do nào sau đây?", options: ["A. Có 17 quốc gia ở châu lục này tuyên bố giành được độc lập.", "B. Tổ chức Thống nhất châu Phi (OUA) được thành lập.", "C. Chế độ phân biệt chủng tộc A-pắc-thai bị xóa bỏ hoàn toàn.", "D. Tất cả các nước châu Phi đều thoát khỏi ách thống trị của thực dân."], correct: 0, explanation: "Năm 1960 được gọi là 'Năm châu Phi' vì có tới 17 quốc gia ở châu lục này giành được độc lập dân tộc." },
+    { id: 12, type: "multiple", question: "Sự kiện nào đánh dấu sự sụp đổ hoàn toàn của chủ nghĩa thực dân cũ cùng hệ thống phân biệt chủng tộc (A-pắc-thai) tại Nam Phi?", options: ["A. Nê-ơn-xơn Man-đê-la trở thành Tổng thống da đen đầu tiên của Nam Phi (1994).", "B. Nhân dân An-jê-ri giành độc lập (1962).", "C. Nước Cộng hòa Gia-mai-ca thành lập.", "D. Nhân dân Ăng-gô-la giành thắng lợi trong cuộc kháng chiến."], correct: 0, explanation: "Tháng 4-1994, cuộc bầu cử dân chủ đa sắc tộc đầu tiên ở Nam Phi đưa Nê-ơn-xơn Man-đê-la lên làm Tổng thống, đánh dấu sự xóa bỏ hoàn toàn chế độ phân biệt chủng tộc A-pắc-thai." },
+    { id: 13, type: "multiple", question: "Thắng lợi của cuộc cách mạng nào năm 1959 được coi là 'lá cờ đầu' của phong trào giải phóng dân tộc ở khu vực Mỹ La-tinh?", options: ["A. Cách mạng Cu-ba.", "B. Cách mạng Mê-hi-cô.", "C. Cách mạng Chi-lê.", "D. Cách mạng Bô-li-vi-a."], correct: 0, explanation: "Thắng lợi của Cách mạng Cu-ba dưới sự lãnh đạo của Phi-đen Cát-xtơ-rô (1-1-1959) đã mở đầu phong trào giải phóng dân tộc ở Mỹ La-tinh." },
+    { id: 14, type: "multiple", question: "Từ nửa sau thế kỷ XX, khu vực Mỹ La-tinh được mệnh danh là gì do phong trào đấu tranh bùng nổ mạnh mẽ?", options: ["A. 'Lục địa bùng cháy'.", "B. 'Lục địa thức tỉnh'.", "C. 'Châu châu mới'.", "D. 'Lục địa hòa bình'."], correct: 0, explanation: "Do phong trào đấu tranh vũ trang và chính trị diễn ra quyết liệt, mạnh mẽ chống lại ách thống trị thực dân kiểu mới của Mỹ, Mỹ La-tinh được gọi là 'Lục địa bùng cháy'." },
+    { id: 15, type: "multiple", question: "Yếu tố khách quan nào sau đây giúp các nước Tây Âu nhanh chóng khôi phục kinh tế sau Chiến tranh thế giới thứ hai?", options: ["A. Nhận viện trợ của Mỹ qua 'Kế hoạch Mác-shan'.", "B. Khai thác tài nguyên từ các nước thuộc địa.", "C. Áp dụng thành tựu khoa học kỹ thuật hiện đại.", "D. Sự hợp tác chặt chẽ giữa các nước trong khu vực."], correct: 0, explanation: "'Kế hoạch Mác-shan' (1947) của Mỹ đã viện trợ khoảng 13 tỉ USD giúp các nước Tây Âu nhanh chóng khôi phục kinh tế sau chiến tranh." },
+    { id: 16, type: "multiple", question: "Nguyên nhân quan trọng nhất giúp nền kinh tế Nhật Bản phát triển 'thần kỳ' trong thập niên 60 - 70 của thế kỷ XX là:", options: ["A. Con người Nhật Bản được đào tạo chu đáo, có ý chí và kỷ luật cao.", "B. Tận dụng tốt các nguồn viện trợ và đơn đặt hàng quân sự của Mỹ.", "C. Chi phí cho quốc phòng rất thấp (dưới 1% GDP).", "D. Áp dụng nhanh chóng các thành tựu khoa học - kỹ thuật."], correct: 0, explanation: "Trong các nguyên nhân phát triển thần kỳ của Nhật Bản, yếu tố con người được coi là nguyên nhân quyết định hàng đầu." },
+    { id: 17, type: "multiple", question: "Cơ quan nào của Liên hợp quốc đóng vai trò trọng yếu trong việc duy trì hòa bình và an ninh thế giới?", options: ["A. Đại hội đồng.", "B. Hội đồng Bảo an.", "C. Ban Thư ký.", "D. Hội đồng Kinh tế và Xã hội."], correct: 1, explanation: "Hội đồng Bảo an là cơ quan giữ vai trò trọng yếu nhất của Liên hợp quốc trong việc quyết định các biện pháp duy trì hòa bình và an ninh thế giới." },
+    { id: 18, type: "multiple", question: "Việt Nam chính thức gia nhập Liên hợp quốc vào thời gian nào và là thành viên thứ bao nhiêu?", options: ["A. Tháng 9-1977, thành viên thứ 149.", "B. Tháng 7-1995, thành viên thứ 150.", "C. Tháng 12-1986, thành viên thứ 140.", "D. Tháng 1-2007, thành viên thứ 150."], correct: 0, explanation: "Ngày 20-9-1977, Việt Nam chính thức trở thành thành viên thứ 149 của tổ chức Liên hợp quốc." },
+    { id: 19, type: "multiple", question: "Cuộc Cách mạng khoa học - kỹ thuật hiện đại bắt đầu từ những năm 40 của thế kỷ XX khởi phát từ quốc gia nào?", options: ["A. Mỹ.", "B. Liên Xô.", "C. Anh.", "D. Đức."], correct: 0, explanation: "Cuộc Cách mạng khoa học - kỹ thuật hiện đại lần thứ hai khởi phát đầu tiên tại nước Mỹ vào giữa những năm 40 của thế kỷ XX." },
+    { id: 20, type: "multiple", question: "Xu thế Toàn cầu hóa là hệ quả trực tiếp của yếu tố nào sau đây?", options: ["A. Cuộc Cách mạng khoa học - công nghệ.", "B. Sự kết thúc của Chiến tranh lạnh.", "C. Sự phát triển của các công ty đa quốc gia.", "D. Sự gia tăng dân số thế giới."], correct: 0, explanation: "Sự phát triển bùng nổ của cuộc Cách mạng khoa học - công nghệ đã thúc đẩy lực lượng sản xuất phát triển mạnh mẽ, dẫn đến xu thế Toàn cầu hóa." },
+    { id: 21, type: "multiple", question: "Hiệp hội các quốc gia Đông Nam Á (ASEAN) được thành lập vào thời gian nào và tại đâu?", options: ["A. Ngày 8-8-1967 tại Băng Cốc (Thái Lan).", "B. Ngày 8-8-1976 tại Ba-li (In-đô-nê-xi-a).", "C. Ngày 28-7-1995 tại Hà Nội (Việt Nam).", "D. Ngày 8-8-1997 tại Gia-các-ta (In-đô-nê-xi-a)."], correct: 0, explanation: "Hiệp hội các quốc gia Đông Nam Á (ASEAN) được thành lập ngày 8-8-1967 tại Băng Cốc (Thái Lan) với 5 nước sáng lập: In-đô-nê-xi-a, Ma-lay-xi-a, Phi-lip-pin, Xing-ga-po và Thái Lan." },
+    { id: 22, type: "multiple", question: "Mục tiêu chính yếu được xác định trong Tuyên bố Băng Cốc (1967) thành lập ASEAN là gì?", options: ["A. Xây dựng một liên minh quân sự - chính trị để phòng thủ chung.", "B. Thúc đẩy tăng trưởng kinh tế, tiến bộ xã hội và phát triển văn hóa trong khu vực.", "C. Mở rộng thành viên ra toàn bộ các nước ở châu Á.", "D. Trở thành một khối kinh tế dùng chung đồng tiền duy nhất."], correct: 1, explanation: "Tuyên bố Băng Cốc (1967) xác định mục tiêu cốt lõi của ASEAN là thúc đẩy hợp tác phát triển kinh tế, văn hóa, xã hội và duy trì hòa bình, ổn định khu vực." },
+    { id: 23, type: "multiple", question: "Sự kiện nào đánh dấu bước phát triển mới của ASEAN, xác định những nguyên tắc cơ bản trong quan hệ giữa các nước thành viên?", options: ["A. Tuyên bố Băng Cốc (1967).", "B. Hiệp ước Thân thiện và Hợp tác ở Đông Nam Á (Hiệp ước Ba-li, 1976).", "C. Việt Nam gia nhập ASEAN (1995).", "D. Hiến chương ASEAN chính thức có hiệu lực (2008)."], correct: 1, explanation: "Hiệp ước Ba-li (2-1976) xác định các nguyên tắc chiến lược như tôn trọng chủ quyền, không can thiệp nội bộ và giải quyết hòa bình các tranh chấp." },
+    { id: 24, type: "multiple", question: "Việt Nam chính thức trở thành thành viên thứ 7 của ASEAN vào thời gian nào?", options: ["A. Ngày 28-7-1995.", "B. Ngày 28-7-1997.", "C. Ngày 30-4-1999.", "D. Ngày 8-8-1995."], correct: 0, explanation: "Ngày 28-7-1995, tại Hội nghị Bộ trưởng Ngoại giao ASEAN lần thứ 28 tại Bru-nây, Việt Nam chính thức trở thành thành viên thứ 7 của ASEAN." },
+    { id: 25, type: "multiple", question: "Cộng đồng ASEAN chính thức được thành lập vào thời gian nào?", options: ["A. Ngày 31-12-2010.", "B. Ngày 31-12-2015.", "C. Ngày 8-8-2017.", "D. Ngày 31-12-2020."], correct: 1, explanation: "Ngày 31-12-2015, Cộng đồng ASEAN chính thức được thành lập dựa trên 3 trụ cột: Chính trị - An ninh, Kinh tế, và Văn hóa - Xã hội." },
+    { id: 26, type: "multiple", question: "Sau khi Chiến tranh lạnh kết thúc (1991), hầu hết các quốc gia trên thế giới đều tập trung vào lĩnh vực nào?", options: ["A. Chạy đua vũ trang và phát triển quân sự.", "B. Lấy phát triển kinh tế làm trọng tâm.", "C. Mở rộng phạm vi ảnh hưởng lãnh thổ.", "D. Thành lập các khối liên minh quân sự mới."], correct: 1, explanation: "Sau Chiến tranh lạnh, sức mạnh tổng hợp quốc gia phụ thuộc chủ yếu vào tiềm lực kinh tế, do đó các nước đều lấy phát triển kinh tế làm trọng tâm." },
+    { id: 27, type: "multiple", question: "Biểu hiện nào sau đây KHÔNG phải là đặc điểm của xu thế toàn cầu hóa?", options: ["A. Sự phát triển nhanh chóng của thương mại quốc tế.", "B. Sự gia tăng mạnh mẽ của các công ty xuyên quốc gia.", "C. Sự khép kín và tự cung tự cấp của nền kinh tế các quốc gia.", "D. Sự xuất hiện của các tổ chức liên kết kinh tế, tài chính quốc tế."], correct: 2, explanation: "Toàn cầu hóa làm tăng cường sự liên kết và phụ thuộc lẫn nhau giữa các nền kinh tế, hoàn toàn đối lập với xu hướng khép kín tự cung tự cấp." },
+    { id: 28, type: "multiple", question: "Trong xu thế toàn cầu hóa, cơ hội lớn nhất đối với các nước đang phát triển là gì?", options: ["A. Tiếp thu những thành tựu khoa học - công nghệ tiên tiến và nguồn vốn đầu tư từ bên ngoài.", "B. Không bị ảnh hưởng bởi khủng hoảng kinh tế toàn cầu.", "C. Giải quyết triệt để sự chênh lệch giàu nghèo trong xã hội.", "D. Xóa bỏ hoàn toàn các rào cản thuế quan."], correct: 0, explanation: "Toàn cầu hóa mở ra cơ hội lớn cho các nước đang phát triển thu hút vốn, công nghệ hiện đại và kinh nghiệm quản lý từ bên ngoài." },
+    { id: 29, type: "multiple", question: "Thách thức lớn nhất đối với Việt Nam khi tham gia vào xu thế toàn cầu hóa là gì?", options: ["A. Nguy cơ tụt hậu về kinh tế, áp lực cạnh tranh gay gắt và nguy cơ xói mòn bản sắc văn hóa.", "B. Thiếu hụt nguồn lao động phổ thông.", "C. Không thể tham gia vào các tổ chức kinh tế khu vực.", "D. Bị cô lập hoàn toàn về mặt chính trị."], correct: 0, explanation: "Hội nhập toàn cầu hóa mang lại áp lực cạnh tranh rất lớn, nguy cơ tụt hậu xa hơn về kinh tế và nguy cơ đánh mất bản sắc văn hóa dân tộc." },
+    { id: 30, type: "multiple", question: "Nguyên tắc quan trọng nhất của Liên hợp quốc trong việc giữ gìn hòa bình và an ninh thế giới là gì?", options: ["A. Sự nhất trí giữa 5 nước lớn (Mỹ, Nga, Anh, Pháp, Trung Quốc).", "B. Tôn trọng quyền bình đẳng tuyệt đối giữa các nước lớn.", "C. Không can thiệp vào công việc nội bộ của các nước lớn.", "D. Đặt lợi ích của các nước phát triển lên hàng đầu."], correct: 0, explanation: "Nguyên tắc nhất trí giữa 5 nước Ủy viên thường trực Hội đồng Bảo an giúp duy trì sự cân bằng quyền lực và ngăn ngừa đụng độ trực tiếp giữa các siêu cường." },
+    { id: 31, type: "multiple", question: "Sau khi Trật tự hai cực I-an-ta sụp đổ, trật tự thế giới mới đang trong quá trình hình thành theo xu hướng nào?", options: ["A. Đơn cực do Mỹ hoàn toàn chi phối.", "B. Đa cực với sự vươn lên của nhiều trung tâm quyền lực.", "C. Hai cực mới giữa Mỹ và Trung Quốc.", "D. Không có bất kỳ trung tâm quyền lực nào."], correct: 1, explanation: "Sau Chiến tranh lạnh, trật tự thế giới đang chuyển dịch theo xu hướng đa cực, với sự trỗi dậy của các trung tâm như Mỹ, EU, Nhật Bản, Trung Quốc, Nga..." },
+    { id: 32, type: "multiple", question: "Cơ quan nào của Liên hợp quốc giữ vai trò trọng yếu trong việc duy trì hòa bình và an ninh thế giới?", options: ["A. Đại hội đồng.", "B. Hội đồng Bảo an.", "C. Ban Thư ký.", "D. Tòa án Quốc tế."], correct: 1, explanation: "Hội đồng Bảo an là cơ quan giữ vai trò trọng yếu nhất của Liên hợp quốc trong việc quyết định các biện pháp duy trì hòa bình và an ninh thế giới." },
+    { id: 33, type: "multiple", question: "Ngày Hiến chương Liên hợp quốc chính thức có hiệu lực (24-10-1945) được lấy làm ngày:", options: ["A. Ngày Quốc tế Hòa bình.", "B. Ngày Liên hợp quốc.", "C. Ngày Nhân quyền Thế giới.", "D. Ngày Hiến chương Quốc tế."], correct: 1, explanation: "Hiến chương Liên hợp quốc có hiệu lực từ ngày 24-10-1945, và ngày này hằng năm được lấy làm 'Ngày Liên hợp quốc'." },
+    { id: 34, type: "multiple", question: "Hiệp ước Ma-a-xơ-trích (1991) đánh dấu bước phát triển vượt bậc của tổ chức liên kết khu vực nào?", options: ["A. Hiệp hội các quốc gia Đông Nam Á (ASEAN).", "B. Liên minh châu Âu (EU).", "C. Diễn đàn Hợp tác Kinh tế Châu Á - Thái Bình Dương (APEC).", "D. Khối Thị trường chung Nam Mỹ (MERCOSUR)."], correct: 1, explanation: "Hiệp ước Ma-a-xơ-trích (ký năm 1991, có hiệu lực 1993) đổi tên Cộng đồng châu Âu (EC) thành Liên minh châu Âu (EU)." },
+    { id: 35, type: "multiple", question: "Xu thế chủ đạo trong quan hệ quốc tế từ sau khi Chiến tranh lạnh kết thúc đến nay là:", options: ["A. Đối đầu trực tiếp và chạy đua vũ trang.", "B. Hòa hoãn, hợp tác và phát triển.", "C. Phân chia phạm vi ảnh hưởng giữa hai siêu cường.", "D. Căng thẳng cục bộ và chiến tranh diện rộng."], correct: 1, explanation: "Sau Chiến tranh lạnh, mặc dù còn xung đột cục bộ, xu thế chủ đạo trong quan hệ quốc tế là hòa bình, hợp tác và cùng phát triển." },
+    { id: 36, type: "multiple", question: "Cuộc đấu tranh nào của công nhân Việt Nam (8-1925) đánh dấu bước chuyển từ tự phát sang tự giác?", options: ["A. Bãi công của công nhân thợ may Sài Gòn.", "B. Bãi công của công nhân xưởng kho xăng Nhà Bè.", "C. Bãi công của công nhân Ba Son (Sài Gòn).", "D. Bãi công của công nhân Nam Định."], correct: 2, explanation: "Cuộc bãi công của công nhân Ba Son (8-1925) bãi công nhằm ngăn tàu Pháp chở quân sang đàn áp cách mạng Trung Quốc, đánh dấu bước chuyển sang đấu tranh tự giác." },
+    { id: 37, type: "multiple", question: "Tổ chức cách mạng nào do Nguyễn Ái Quốc thành lập tháng 6-1925 tại Quảng Châu (Trung Quốc)?", options: ["A. Hội Việt Nam Cách mạng Thanh niên.", "B. Việt Nam Quốc dân đảng.", "C. Tân Việt Cách mạng đảng.", "D. Hội Liên hiệp các dân tộc bị áp bức Á Đông."], correct: 0, explanation: "Tháng 6-1925, Nguyễn Ái Quốc thành lập Hội Việt Nam Cách mạng Thanh niên nhằm chuẩn bị về tổ chức và cán bộ cho sự ra đời của Đảng." },
+    { id: 38, type: "multiple", question: "Cơ quan ngôn luận của Hội Việt Nam Cách mạng Thanh niên do Nguyễn Ái Quốc sáng lập là tờ báo nào?", options: ["A. Báo Người khổ nông.", "B. Báo Thanh niên.", "C. Báo Búa liềm.", "D. Báo Nhành lúa."], correct: 1, explanation: "Báo Thanh niên là cơ quan ngôn luận của Hội Việt Nam Cách mạng Thanh niên, ra số đầu tiên ngày 21-6-1925." },
+    { id: 39, type: "multiple", question: "Tác phẩm nào tập hợp các bài giảng của Nguyễn Ái Quốc tại các lớp huấn luyện cán bộ ở Quảng Châu (1925 - 1927)?", options: ["A. Bản án chế độ thực dân Pháp.", "B. Đường Kách mệnh.", "C. Tuyên ngôn Độc lập.", "D. Lời kêu gọi toàn quốc kháng chiến."], correct: 1, explanation: "Tác phẩm 'Đường Kách mệnh' (xuất bản năm 1927) tập hợp các bài giảng của Nguyễn Ái Quốc, trang bị lý luận cách mạng giải phóng dân tộc cho cán bộ." },
+    { id: 40, type: "multiple", question: "Năm 1929, ở Việt Nam xuất hiện 3 tổ chức cộng sản thể hiện xu thế nào?", options: ["A. Xu thế khách quan của cuộc vận động giải phóng dân tộc.", "B. Sự khủng hoảng sâu sắc về đường lối cứu nước.", "C. Sự chia rẽ không thể hàn gắn trong nội bộ cách mạng.", "D. Sự thất bại của lý luận Mác - Lênin tại Việt Nam."], correct: 0, explanation: "Sự xuất hiện của 3 tổ chức cộng sản năm 1929 là xu thế khách quan của phong trào dân tộc dân chủ, đòi hỏi phải có một Đảng Cộng sản thống nhất." },
+    { id: 41, type: "multiple", question: "Hội nghị hợp nhất các tổ chức cộng sản (đầu năm 1930) do Nguyễn Ái Quốc chủ trì diễn ra tại đâu?", options: ["A. Cửu Long - Hương Cảng (Trung Quốc).", "B. Quảng Châu (Trung Quốc).", "C. Cao Bằng (Việt Nam).", "D. Băng Cốc (Thái Lan)."], correct: 0, explanation: "Hội nghị thành lập Đảng diễn ra từ ngày 6-1-1930 tại Cửu Long (Hương Cảng, Trung Quốc) dưới sự chủ trì của Nguyễn Ái Quốc." },
+    { id: 42, type: "multiple", question: "Yếu tố quyết định cho sự thành công của Hội nghị hợp nhất các tổ chức cộng sản đầu năm 1930 là gì?", options: ["A. Sự chỉ đạo trực tiếp của Quốc tế Cộng sản.", "B. Uy tín tuyệt đối và năng lực hợp nhất của Nguyễn Ái Quốc.", "C. Sự giúp đỡ nhiệt tình của Đảng Cộng sản Trung Quốc.", "D. Thực dân Pháp nới lỏng chính sách đàn áp."], correct: 1, explanation: "Uy tín chính trị cao và đường lối đúng đắn của Nguyễn Ái Quốc là yếu tố quyết định hợp nhất các tổ chức cộng sản thành Đảng Cộng sản Việt Nam." },
+    { id: 43, type: "multiple", question: "Đỉnh cao của phong trào cách mạng 1930 - 1931 ở Việt Nam được thể hiện qua sự kiện nào?", options: ["A. Cuộc đấu tranh nhân ngày Quốc tế Lao động 1-5-1930.", "B. Sự thành lập chính quyền Xô viết Nghệ - Tĩnh.", "C. Cuộc bãi công của công nhân dệt Nam Định.", "D. Cuộc đấu tranh của nông dân Tiền Hải (Thái Bình)."], correct: 1, explanation: "Đỉnh cao phong trào 1930 - 1931 là việc thành lập chính quyền Xô viết ở một số xã thuộc Nghệ An và Hà Tĩnh." },
+    { id: 44, type: "multiple", question: "Cương lĩnh chính trị đầu tiên của Đảng (đầu năm 1930) do ai soạn thảo?", options: ["A. Trần Phú.", "B. Nguyễn Ái Quốc.", "C. Lê Hồng Phong.", "D. Trường Chinh."], correct: 1, explanation: "Cương lĩnh chính trị đầu tiên của Đảng do Nguyễn Ái Quốc soạn thảo và được thông qua tại Hội nghị thành lập Đảng đầu năm 1930." },
+    { id: 45, type: "multiple", question: "Luận cương chính trị (tháng 10-1930) do ai soạn thảo tại Hội nghị lần thứ nhất Chấp hành Trung ương Đảng?", options: ["A. Nguyễn Ái Quốc.", "B. Trần Phú.", "C. Hà Huy Tập.", "D. Nguyễn Văn Cừ."], correct: 1, explanation: "Luận cương chính trị tháng 10-1930 do đồng chí Trần Phú soạn thảo, bầu Trần Phú làm Tổng Bí thư đầu tiên của Đảng." },
+    { id: 46, type: "multiple", question: "Mục tiêu đấu tranh trực tiếp và chủ yếu của nhân dân Việt Nam trong phong trào dân chủ 1936 - 1939 là gì?", options: ["A. Tự do, dân sinh, dân chủ, cơm áo và hòa bình.", "B. Đánh đổ thực dân Pháp, giải phóng dân tộc.", "C. Tịch thu ruộng đất của địa chủ chia cho dân cày.", "D. Đánh đổ đế quốc và phong kiến thành lập chính quyền Xô viết."], correct: 0, explanation: "Trong phong trào 1936 - 1939, Đảng xác định mục tiêu trước mắt là đòi tự do, dân sinh, dân chủ, cơm áo và hòa bình." },
+    { id: 47, type: "multiple", question: "Hình thức và phương pháp đấu tranh chủ yếu trong phong trào dân chủ 1936 - 1939 là:", options: ["A. Đấu tranh vũ trang kết hợp khởi nghĩa quần chúng.", "B. Kết hợp các hình thức công khai, hợp pháp, nửa công khai, nửa hợp pháp.", "C. Đấu tranh ngoại giao kết hợp vận động binh vận.", "D. Chiến tranh du kích cục bộ."], correct: 1, explanation: "Phong trào 1936 - 1939 triệt để lợi dụng khả năng hợp pháp để đấu tranh công khai, nửa công khai, hợp pháp và nửa hợp pháp." },
+    { id: 48, type: "multiple", question: "Ý nghĩa quan trọng nhất của phong trào dân chủ 1936 - 1939 đối với Cách mạng tháng Tám năm 1945 là gì?", options: ["A. Bước đầu xây dựng được lực lượng vũ trang nhân dân.", "B. Là cuộc tập dượt thứ hai chuẩn bị cho thắng lợi của Cách mạng tháng Tám.", "C. Giải phóng được nhiều vùng nông thôn rộng lớn.", "D. Lần đầu tiên khẳng định quyền lãnh đạo của Đảng."], correct: 1, explanation: "Phong trào 1936 - 1939 là cuộc tập dượt thứ hai (sau 1930 - 1931) giúp Đảng tích lũy bài học kinh nghiệm chuẩn bị cho Cách mạng tháng Tám." },
+    { id: 49, type: "multiple", question: "Hội nghị Trung ương Đảng lần thứ 8 (tháng 5-1941) do Nguyễn Ái Quốc chủ trì đã đặt nhiệm vụ nào lên hàng đầu?", options: ["A. Cách mạng ruộng đất.", "B. Giải phóng dân tộc.", "C. Đấu tranh cải thiện đời sống.", "D. Xây dựng căn cứ địa cách mạng."], correct: 1, explanation: "Hội nghị TW 8 (5-1941) hoàn chỉnh chuyển hướng chiến lược, đặt nhiệm vụ giải phóng dân tộc lên hàng đầu và cấp bách nhất." },
+    { id: 50, type: "multiple", question: "Mặt trận Việt Minh (Việt Nam Độc lập Đồng minh) chính thức được thành lập vào ngày tháng năm nào?", options: ["A. Ngày 19-5-1941.", "B. Ngày 22-12-1944.", "C. Ngày 9-3-1945.", "D. Ngày 14-8-1945."], correct: 0, explanation: "Mặt trận Việt Minh được thành lập ngày 19-5-1941 nhằm đoàn kết tất cả các tầng lớp nhân dân chống đế quốc Pháp - Nhật." },
+    { id: 51, type: "multiple", question: "Đội Việt Nam Tuyên truyền Giải phóng quân thành lập ngày 22-12-1944 do ai làm chỉ huy?", options: ["A. Chu Văn Tấn.", "B. Võ Nguyên Giáp.", "C. Nguyễn Chí Thanh.", "D. Văn Tiến Dũng."], correct: 1, explanation: "Đội Việt Nam Tuyên truyền Giải phóng quân thành lập ngày 22-12-1944 tại Cao Bằng gồm 34 chiến sĩ, do đồng chí Võ Nguyên Giáp trực tiếp chỉ huy." },
+    { id: 52, type: "multiple", question: "Sự kiện Nhật đảo chính Pháp ở Đông Dương diễn ra vào thời gian nào?", options: ["A. Đêm 9-3-1945.", "B. Ngày 12-3-1945.", "C. Ngày 15-8-1945.", "D. Ngày 19-8-1945."], correct: 0, explanation: "Đêm 9-3-1945, Nhật bất ngờ nổ súng đảo chính Pháp trên toàn Đông Dương để độc chiếm vùng đất này." },
+    { id: 53, type: "multiple", question: "Ngay sau khi Nhật đảo chính Pháp, Ban Thường vụ Trung ương Đảng ra chỉ thị nào?", options: ["A. 'Nhật - Pháp bắn nhau và hành động của chúng ta'.", "B. 'Kháng chiến kiến quốc'.", "C. 'Toàn dân kháng chiến'.", "D. 'Sửa đổi lối làm việc'."], correct: 0, explanation: "Chỉ thị 'Nhật - Pháp bắn nhau và hành động của chúng ta' (12-3-1945) xác định kẻ thù chính duy nhất của nhân dân Đông Dương lúc này là phát xít Nhật." },
+    { id: 54, type: "multiple", question: "Bốn tỉnh dành chính quyền ở mốc tỉnh lèo sớm nhất trong Cách mạng tháng Tám năm 1945 là:", options: ["A. Bắc Giang, Hải Dương, Hà Tĩnh, Quảng Nam.", "B. Hà Nội, Huế, Sài Gòn, Bắc Giang.", "C. Tuyên Quang, Thai Nguyên, Cao Bằng, Lạng Sơn.", "D. Hải Phòng, Quảng Ninh, Nghệ An, Hà Tĩnh."], correct: 0, explanation: "Bắc Giang, Hải Dương, Hà Tĩnh và Quảng Nam là 4 tỉnh giành được chính quyền sớm nhất cả nước (ngày 18-8-1945)." },
+    { id: 55, type: "multiple", question: "Sự kiện nào đánh dấu sự sụp đổ hoàn toàn của chế độ phong kiến tồn tại hàng ngàn năm ở Việt Nam?", options: ["A. Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập (2-9-1945).", "B. Vua Bảo Đại tuyên bố thoái vị và trao ấn kiếm cho đại diện Chính phủ lâm thời (30-8-1945).", "C. Khởi nghĩa giành chính quyền thắng lợi ở Hà Nội (19-8-1945).", "D. Tổng tuyển cử bầu Quốc hội khóa I (6-1-1946)."], correct: 1, explanation: "Chiều 30-8-1945 tại Huế, vua Bảo Đại đọc tuyên ngôn thoái vị, chính thức chấm dứt chế độ phong kiến tại Việt Nam." },
+    { id: 56, type: "multiple", question: "Bản Tuyên ngôn Độc lập được Chủ tịch Hồ Chí Minh đọc tại đâu vào ngày 2-9-1945?", options: ["A. Nhà hát Lớn Hà Nội.", "B. Quảng trường Ba Đình (Hà Nội).", "C. Phủ Chủ tịch.", "D. Căn cứ địa Việt Bắc."], correct: 1, explanation: "Ngày 2-9-1945, tại Quảng trường Ba Đình (Hà Nội), Chủ tịch Hồ Chí Minh thay mặt Chính phủ lâm thời đọc bản Tuyên ngôn Độc lập khai sinh ra nước Việt Nam Dân chủ Cộng hòa." },
+    { id: 57, type: "multiple", question: "Sau Cách mạng tháng Tám 1945, Việt Nam phải đối mặt với khó khăn hiểm nghèo nào?", options: ["A. Giặc đói, giặc dốt và giặc ngoại xâm.", "B. Khủng hoảng kinh tế toàn cầu.", "C. Bị Liên hợp quốc cấm vận.", "D. Sự chia rẽ trong nội bộ Chính phủ."], correct: 0, explanation: "Sau 1945, nước ta rơi vào tình thế 'ngàn cân treo sợi tóc' với 3 thứ giặc hiểm nghèo: giặc đói, giặc dốt và giặc ngoại xâm." },
+    { id: 58, type: "multiple", question: "Lời kêu gọi Toàn quốc kháng chiến của Chủ tịch Hồ Chí Minh được ban hành vào thời gian nào?", options: ["A. Đêm 19-12-1946.", "B. Ngày 23-9-1945.", "C. Ngày 6-3-1946.", "D. Ngày 19-12-1947."], correct: 0, explanation: "Đêm 19-12-1946, Chủ tịch Hồ Chí Minh ra Lời kêu gọi Toàn quốc kháng chiến mở đầu cho cuộc kháng chiến chống Pháp trên phạm vi toàn quốc." },
+    { id: 59, type: "multiple", question: "Chiến dịch nào đã làm thất bại hoàn toàn chiến lược 'đánh nhanh thắng nhanh' của thực dân Pháp?", options: ["A. Chiến dịch Việt Bắc thu - đông 1947.", "B. Chiến dịch Biên giới thu - đông 1950.", "C. Chiến dịch Tây Bắc 1952.", "D. Chiến dịch Điện Biên Phủ 1954."], correct: 0, explanation: "Chiến dịch Việt Bắc thu - đông 1947 đã đánh bại cuộc tiến công lên căn cứ địa Việt Bắc, buộc Pháp phải chuyển sang 'đánh lâu dài'." },
+    { id: 60, type: "multiple", question: "Chiến dịch tiến công lớn đầu tiên của quân đội ta trong kháng chiến chống Pháp làm chủ động trên chiến trường Bắc Bộ là:", options: ["A. Chiến dịch Việt Bắc 1947.", "B. Chiến dịch Biên giới thu - đông 1950.", "C. Chiến dịch Thượng Lào 1953.", "D. Chiến dịch Điện Biên Phủ 1954."], correct: 1, explanation: "Chiến dịch Biên giới 1950 là chiến dịch tiến công lớn đầu tiên của ta, giúp ta giành thế chủ động chiến lược trên chiến trường chính Bắc Bộ." },
+    { id: 61, type: "multiple", question: "Đại hội đại biểu toàn quốc lần thứ II của Đảng (tháng 2-1951) quyết định đổi tên Đảng thành gì?", options: ["A. Đảng Cộng sản Việt Nam.", "B. Đảng Lao động Việt Nam.", "C. Đảng Cộng sản Đông Dương.", "D. Hội Nghiên cứu Chủ nghĩa Mác."], correct: 1, explanation: "Đại hội II (2-1951) ra hoạt động công khai và đổi tên Đảng thành Đảng Lao động Việt Nam." },
+    { id: 62, type: "multiple", question: "Thắng lợi quân sự đỉnh cao nào đã đập tan tập đoàn cứ điểm mạnh nhất của Pháp, buộc Pháp phải ký Hiệp định Giơ-ne-vơ (1954)?", options: ["A. Chiến dịch Biên giới 1950.", "B. Chiến dịch Điện Biên Phủ 1954.", "C. Cuộc tiến công chiến lược Đông - Xuân 1953 - 1954.", "D. Chiến dịch Thượng Lào 1953."], correct: 1, explanation: "Chiến thắng Điện Biên Phủ (7-5-1954) giáng đòn quyết định đập tan ý chí xâm lược của Pháp, buộc Pháp ký Hiệp định Giơ-ne-vơ chấm dứt chiến tranh." },
+    { id: 63, type: "multiple", question: "Nhiệm vụ chiến lược của cách mạng Việt Nam giai đoạn 1954 - 1975 được Đại hội III của Đảng (1960) xác định là gì?", options: ["A. Thực hiện đồng thời hai chiến lược cách mạng ở hai miền Nam - Bắc.", "B. Hoàn thành cách mạng ruộng đất trên phạm vi cả nước.", "C. Tập trung toàn lực giải phóng miền Nam.", "D. Xây dựng chủ nghĩa xã hội trên phạm vi cả nước."], correct: 0, explanation: "Đại hội III xác định thực hiện đồng thời 2 chiến lược: Cách mạng XHCN ở miền Bắc và Cách mạng dân tộc dân chủ nhân dân ở miền Nam." },
+    { id: 64, type: "multiple", question: "Phong trào 'Đồng khởi' (1959 - 1960) bùng nổ mạnh mẽ và giành thắng lợi lớn nhất ở tỉnh nào?", options: ["A. Bến Tre.", "B. Tây Ninh.", "C. Quảng Nam.", "D. Bình Định."], correct: 0, explanation: "Phong trào 'Đồng khởi' bắt đầu từ Bến Tre (17-1-1960) sau đó lan rộng ra khắp Nam Bộ, Nam Trung Bộ và Tây Nguyên." },
+    { id: 65, type: "multiple", question: "Chiến lược 'Chiến tranh đặc biệt' (1961 - 1965) của Mỹ ở miền Nam Việt Nam được thực hiện bằng công thức nào?", options: ["A. Quân đội Sài Gòn + Cố vấn Mỹ + Vũ khí, phương tiện chiến tranh của Mỹ.", "B. Quân đội Mỹ + Quân đồng minh + Quân đội Sài Gòn.", "C. Quân đội Mỹ làm nòng cốt + Không quân Mỹ hỗ trợ.", "D. Sử dụng vũ khí hạt nhân đe dọa miền Bắc."], correct: 0, explanation: "'Chiến tranh đặc biệt' là hình thái chiến tranh xâm lược bằng quân đội tay sai (Sài Gòn) dưới sự chỉ huy của hệ thống cố vấn Mỹ cùng vũ khí Mỹ." },
+    { id: 66, type: "multiple", question: "Chiến thắng nào của ta mở đầu cho khả năng đánh bại chiến lược 'Chiến tranh cục bộ' (1965 - 1968) của Mỹ?", options: ["A. Chiến thắng Ấp Bắc.", "B. Chiến thắng Vạn Tường (Quảng Ngãi).", "C. Chiến thắng Bình Giã.", "D. Chiến thắng Đồng Xoài."], correct: 1, explanation: "Chiến thắng Vạn Tường (8-1965) khẳng định quân dân ta hoàn toàn có khả năng đánh thắng chiến lược 'Chiến tranh cục bộ' của Mỹ." },
+    { id: 67, type: "multiple", question: "Cuộc Tổng tiến công và nổi dậy Tết Mậu Thân 1968 đã buộc Mỹ phải thực hiện bước ngoặt chiến lược nào?", options: ["A. Tuyên bố 'Phi Mỹ hóa' chiến tranh và chấp nhận ngồi vào bàn đàm phán ở Pa-ri.", "B. Rút toàn bộ quân đội Mỹ về nước ngay lập tức.", "C. Mở rộng chiến tranh sang Campuchia và Lào.", "D. Ký Hiệp định Pa-ri rút quân ngay trong năm 1968."], correct: 0, explanation: "Mậu Thân 1968 làm phá sản chiến lược Chiến tranh cục bộ, buộc Mỹ phải tuyên bố 'Phi Mỹ hóa' chiến tranh và đàm phán tại Pa-ri." },
+    { id: 68, type: "multiple", question: "Trận 'Điện Biên Phủ trên không' cuối năm 1972 là tên gọi thể hiện chiến thắng của quân dân ta trong chiến dịch nào?", options: ["A. Đánh bại cuộc tập kích chiến lược bằng máy bay B52 của Mỹ vào Hà Nội, Hải Phòng.", "B. Đánh bại chiến dịch đường không Mỹ ở Quảng Trị.", "C. Đánh bại cuộc tiến công sang Lào 1971.", "D. Đánh bại hải quân Mỹ trên vịnh Bắc Bộ."], correct: 0, explanation: "Thắng lợi 12 ngày đêm cuối năm 1972 đánh bại cuộc tập kích chiến lược B52 vào Hà Nội, Hải Phòng được xem là trận 'Điện Biên Phủ trên không'." },
+    { id: 69, type: "multiple", question: "Hiệp định Pa-ri về chấm dứt chiến tranh, lập lại hòa bình ở Việt Nam được ký kết vào thời gian nào?", options: ["A. Ngày 27-1-1973.", "B. Ngày 1-11-1968.", "C. Ngày 30-4-1975.", "D. Ngày 21-7-1954."], correct: 0, explanation: "Ngày 27-1-1973, Hiệp định Pa-ri chính thức được ký kết, buộc Mỹ phải rút hết quân đội về nước, tạo thế và lực mới cho cách mạng." },
+    { id: 70, type: "multiple", question: "Chiến dịch cuối cùng giải phóng hoàn toàn miền Nam, thống nhất đất nước năm 1975 mang tên là gì?", options: ["A. Chiến dịch Tây Nguyên.", "B. Chiến dịch Huế - Đà Nẵng.", "C. Chiến dịch Hồ Chí Minh.", "D. Chiến dịch Xuân Lộc."], correct: 2, explanation: "Ngày 14-4-1975, Bộ Chính trị quyết định đổi tên chiến dịch giải phóng Sài Gòn - Gia Định thành Chiến dịch Hồ Chí Minh." },
+    { id: 71, type: "multiple", question: "Hội nghị lần thứ 24 Ban Chấp hành Trung ương Đảng (9-1975) đề ra nhiệm vụ trọng tâm nào?", options: ["A. Đẩy mạnh công nghiệp hóa.", "B. Hoàn thành thống nhất đất nước về mặt nhà nước.", "C. Gia nhập tổ chức Liên hợp quốc.", "D. Tiến hành Đổi mới kinh tế."], correct: 1, explanation: "Hội nghị TW 24 (9-1975) đề ra nhiệm vụ hoàn thành thống nhất đất nước về mặt nhà nước sau khi đã thống nhất về mặt lãnh thổ." },
+    { id: 72, type: "multiple", question: "Đại hội đại biểu toàn quốc lần thứ VI của Đảng (12-1986) mở đầu cho thời kỳ nào của Việt Nam?", options: ["A. Khôi phục kinh tế sau chiến tranh.", "B. Đường lối Đổi mới toàn diện đất nước.", "C. Xây dựng chủ nghĩa xã hội ở miền Bắc.", "D. Hội nhập quốc tế toàn diện."], correct: 1, explanation: "Đại hội VI (12-1986) đề ra đường lối Đổi mới toàn diện, đưa đất nước thoát khỏi khủng hoảng kinh tế - xã hội." },
+    { id: 73, type: "multiple", question: "Trọng tâm của đường lối Đổi mới ở Việt Nam được đề ra từ Đại hội VI (12-1986) là lĩnh vực nào?", options: ["A. Đổi mới kinh tế.", "B. Đổi mới chính trị.", "C. Đổi mới văn hóa - giáo dục.", "D. Đổi mới quốc phòng - an ninh."], correct: 0, explanation: "Đảng xác định lấy Đổi mới kinh tế làm trọng tâm, đồng thời từng bước đổi mới về chính trị và các lĩnh vực khác." },
+    { id: 74, type: "multiple", question: "Việt Nam chính thức trở thành thành viên thứ 150 của Tổ chức Thương mại Thế giới (WTO) vào năm nào?", options: ["A. Năm 1995.", "B. Năm 2007.", "C. Năm 2015.", "D. Năm 2020."], correct: 1, explanation: "Tháng 1-2007, Việt Nam chính thức trở thành thành viên thứ 150 của Tổ chức Thương mại Thế giới (WTO)." },
+    { id: 75, type: "multiple", question: "Phương châm đối ngoại của Việt Nam trong thời kỳ Đổi mới và hội nhập quốc tế là gì?", options: ["A. Việt Nam muốn làm bạn, làm đối tác tin cậy và là thành viên có trách nhiệm trong cộng đồng quốc tế.", "B. Chỉ mở rộng hợp tác với các nước xã hội chủ nghĩa.", "C. Ưu tiên liên kết quân sự với các nước lớn.", "D. Chỉ hợp tác kinh tế với các quốc gia trong khu vực Đông Nam Á."], correct: 0, explanation: "Việt Nam thực hiện đường lối đối ngoại độc lập, tự chủ, đa phương hóa, đa dạng hóa; là bạn, đối tác tin cậy và thành viên có trách nhiệm của cộng đồng quốc tế." },
+
+    // --- BỘ 6 CÂU ĐÚNG / SAI (CÂU 76 ĐẾN CÂU 81) ---
+    {
+        id: 76,
+        type: "tf",
+        question: "Về Hội nghị I-an-ta (2-1945) và Trật tự thế giới hai cực I-an-ta, hãy xác định các nhận định sau đây là Đúng hay Sai:",
+        items: [
+            { id: 'a', text: "a) Hội nghị diễn ra khi Chiến tranh thế giới thứ hai đã hoàn toàn kết thúc.", answer: false, exp: "Sai. Hội nghị họp tháng 2-1945, khi Chiến tranh thế giới thứ hai bước vào giai đoạn kết thúc nhưng chưa kết thúc." },
+            { id: 'b', text: "b) Hội nghị có sự tham gia của 3 nguyên thủ đại diện cho Liên Xô, Mỹ và Anh.", answer: true, exp: "Đúng. Đó là Xta-lin (Liên Xô), Ru-zơ-ven (Mỹ) và Sơ-xin (Anh)." },
+            { id: 'c', text: "c) Quyết định của Hội nghị phân chia Đông Âu thuộc phạm vi ảnh hưởng của Mỹ.", answer: false, exp: "Sai. Đông Âu thuộc phạm vi ảnh hưởng của Liên Xô, Tây Âu mới thuộc Mỹ và Anh." },
+            { id: 'd', text: "d) Trật tự hai cực I-an-ta đã duy trì sự chi phối thế giới trong suốt thời kỳ Chiến tranh lạnh.", answer: true, exp: "Đúng. Trật tự hai cực I-an-ta kéo dài từ 1945 đến khi Liên Xô sụp đổ năm 1991." }
+        ]
+    },
+    {
+        id: 77,
+        type: "tf",
+        question: "Về sự thành lập và phát triển của Tổ chức Liên hợp quốc, hãy xác định các nhận định sau là Đúng hay Sai:",
+        items: [
+            { id: 'a', text: "a) Hiến chương Liên hợp quốc chính thức có hiệu lực từ ngày 24-10-1945.", answer: true, exp: "Đúng. Ngày 24-10-1945 là Ngày Liên hợp quốc." },
+            { id: 'b', text: "b) Hội đồng Bảo an có 5 nước thành viên thường trực giữ vai trò trọng yếu.", answer: true, exp: "Đúng. 5 nước thường trực gồm Mỹ, Nga (trước là Liên Xô), Anh, Pháp, Trung Quốc." },
+            { id: 'c', text: "c) Việt Nam tham gia Liên hợp quốc vào năm 1995.", answer: false, exp: "Sai. Việt Nam gia nhập Liên hợp quốc vào ngày 20-9-1977 (năm 1995 là gia nhập ASEAN)." },
+            { id: 'd', text: "d) Nguyên tắc hoạt động quan trọng nhất là nhất trí giữa 5 nước lớn ủy viên thường trực Hội đồng Bảo an.", answer: true, exp: "Đúng. Đây là nguyên tắc cốt lõi giúp duy trì hòa bình và an ninh thế giới." }
+        ]
+    },
+    {
+        id: 78,
+        type: "tf",
+        question: "Về sự ra đời và phát triển của Hiệp hội các quốc gia Đông Nam Á (ASEAN), hãy xác định các nhận định sau là Đúng hay Sai:",
+        items: [
+            { id: 'a', text: "a) ASEAN được thành lập ngày 8-8-1967 tại Băng Cốc (Thái Lan).", answer: true, exp: "Đúng. Với 5 quốc gia sáng lập ban đầu." },
+            { id: 'b', text: "b) Mục tiêu hàng đầu của ASEAN khi mới thành lập là xây dựng liên minh quân sự.", answer: false, exp: "Sai. Mục tiêu ban đầu là hợp tác kinh tế, văn hóa, xã hội và duy trì hòa bình khu vực." },
+            { id: 'c', text: "c) Việt Nam chính thức trở thành thành viên thứ 7 của ASEAN vào ngày 28-7-1995.", answer: true, exp: "Đúng. Việt Nam gia nhập ASEAN năm 1995." },
+            { id: 'd', text: "d) Cộng đồng ASEAN được thành lập vào năm 2008 khi Hiến chương ASEAN có hiệu lực.", answer: false, exp: "Sai. Cộng đồng ASEAN chính thức thành lập vào ngày 31-12-2015." }
+        ]
+    },
+    {
+        id: 79,
+        type: "tf",
+        question: "Về Hội nghị thành lập Đảng Cộng sản Việt Nam (đầu năm 1930), hãy xác định các nhận định sau là Đúng hay Sai:",
+        items: [
+            { id: 'a', text: "a) Hội nghị diễn ra tại Quảng Châu (Trung Quốc) do Nguyễn Ái Quốc chủ trì.", answer: false, exp: "Sai. Hội nghị diễn ra tại Cửu Long - Hương Cảng (Trung Quốc)." },
+            { id: 'b', text: "b) Hội nghị đã hợp nhất các tổ chức cộng sản thành một đảng duy nhất lấy tên là Đảng Cộng sản Việt Nam.", answer: true, exp: "Đúng. Đây là quyết định lịch sử của Hội nghị." },
+            { id: 'c', text: "c) Cương lĩnh chính trị đầu tiên do đồng chí Trần Phú soạn thảo.", answer: false, exp: "Sai. Cương lĩnh chính trị đầu tiên do Nguyễn Ái Quốc soạn thảo (Trần Phú soạn Luận cương tháng 10-1930)." },
+            { id: 'd', text: "d) Sự ra đời của Đảng là sản phẩm của sự kết hợp giữa chủ nghĩa Mác - Lênin với phong trào công nhân và phong trào yêu nước.", answer: true, exp: "Đúng. Đây là quy luật ra đời của Đảng Cộng sản Việt Nam." }
+        ]
+    },
+    {
+        id: 80,
+        type: "tf",
+        question: "Về Cuộc kháng chiến chống Pháp (1945 - 1954) của nhân dân Việt Nam, hãy xác định các nhận định sau là Đúng hay Sai:",
+        items: [
+            { id: 'a', text: "a) Lời kêu gọi Toàn quốc kháng chiến được Chủ tịch Hồ Chí Minh ra vào đêm 19-12-1946.", answer: true, exp: "Đúng. Đêm 19-12-1946 bùng nổ cuộc kháng chiến toàn quốc." },
+            { id: 'b', text: "b) Chiến dịch Việt Bắc thu - đông 1947 giúp ta giành thế chủ động chiến lược trên chiến trường chính.", answer: false, exp: "Sai. Chiến dịch Việt Bắc 1947 làm thất bại 'đánh nhanh thắng nhanh'; Chiến dịch Biên giới 1950 mới giúp ta giành thế chủ động." },
+            { id: 'c', text: "c) Đại hội II của Đảng (2-1951) quyết định đổi tên Đảng thành Đảng Lao động Việt Nam.", answer: true, exp: "Đúng. Đảng ra hoạt động công khai với tên gọi Đảng Lao động Việt Nam." },
+            { id: 'd', text: "d) Chiến thắng Điện Biên Phủ 1954 đã đập tan tập đoàn cứ điểm mạnh nhất của Pháp.", answer: true, exp: "Đúng. Thắng lợi Điện Biên Phủ buộc Pháp ký Hiệp định Giơ-ne-vơ." }
+        ]
+    },
+    {
+        id: 81,
+        type: "tf",
+        question: "Về công cuộc Đổi mới ở Việt Nam (từ năm 1986 đến nay), hãy xác định các nhận định sau là Đúng hay Sai:",
+        items: [
+            { id: 'a', text: "a) Đường lối Đổi mới toàn diện được đề ra tại Đại hội đại biểu toàn quốc lần thứ VI (12-1986).", answer: true, exp: "Đúng. Đại hội VI là mốc mở đầu thời kỳ Đổi mới." },
+            { id: 'b', text: "b) Trọng tâm của công cuộc Đổi mới ở Việt Nam là đổi mới về chính trị.", answer: false, exp: "Sai. Trọng tâm của Đổi mới là đổi mới kinh tế." },
+            { id: 'c', text: "c) Việt Nam chính thức gia nhập Tổ chức Thương mại Thế giới (WTO) vào năm 2007.", answer: true, exp: "Đúng. Việt Nam trở thành thành viên thứ 150 của WTO năm 2007." },
+            { id: 'd', text: "d) Đường lối đối ngoại thời kỳ Đổi mới là đa phương hóa, đa dạng hóa các quan hệ quốc tế.", answer: true, exp: "Đúng. Việt Nam muốn làm bạn, là đối tác tin cậy của các nước trong cộng đồng quốc tế." }
+        ]
+    }
+];
+
+let currentQuestionIndex = 0;
+let userAnswers = new Array(quizQuestions.length).fill(null);
+
+function loadQuestion() {
+    const q = quizQuestions[currentQuestionIndex];
+    
+    // Cập nhật câu hỏi và tiến trình
+    document.getElementById("question-text").innerText = `Câu ${q.id}: ${q.question}`;
+    document.getElementById("progress").style.width = `${((currentQuestionIndex + 1) / quizQuestions.length) * 100}%`;
+    
+    const answersContainer = document.getElementById("answers-container");
+    answersContainer.innerHTML = "";
+
+    const expText = document.getElementById("explanation-text");
+    expText.style.display = "none";
+    expText.innerText = "";
+
+    // Nút điều hướng
+    document.getElementById("prev-btn").disabled = currentQuestionIndex === 0;
+    document.getElementById("next-btn").innerText = (currentQuestionIndex === quizQuestions.length - 1) ? "Xem kết quả" : "Câu tiếp theo";
+
+    // LOẠI 1: TRẮC NGHIỆM 4 ĐÁP ÁN (CÂU 1-75)
+    if (q.type === "multiple") {
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = opt;
+            btn.onclick = () => selectMultipleOption(index);
+
+            // Khôi phục trạng thái đã chọn
+            if (userAnswers[currentQuestionIndex] !== null) {
+                btn.disabled = true;
+                if (index === q.correct) btn.classList.add("correct");
+                if (index === userAnswers[currentQuestionIndex] && index !== q.correct) btn.classList.add("wrong");
+            }
+
+            optionsDiv.appendChild(btn);
+        });
+
+        answersContainer.appendChild(optionsDiv);
+
+        if (userAnswers[currentQuestionIndex] !== null) {
+            expText.innerText = "Giải thích: " + q.explanation;
+            expText.style.display = "block";
+        }
+    } 
+    // LOẠI 2: ĐÚNG / SAI HIỂN THỊ ĐÁP ÁN NGAY (CÂU 76-81)
+    else if (q.type === "tf") {
+        if (!userAnswers[currentQuestionIndex]) {
+            userAnswers[currentQuestionIndex] = {};
+        }
+
+        q.items.forEach((item) => {
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "tf-item";
+
+            const textDiv = document.createElement("div");
+            textDiv.className = "tf-text";
+            textDiv.innerText = item.text;
+
+            const btnsDiv = document.createElement("div");
+            btnsDiv.className = "tf-btns";
+
+            const trueBtn = document.createElement("button");
+            trueBtn.className = `tf-btn tf-btn-true-${item.id}`;
+            trueBtn.innerText = "Đúng";
+            trueBtn.onclick = () => selectTFAnswers(item.id, true);
+
+            const falseBtn = document.createElement("button");
+            falseBtn.className = `tf-btn tf-btn-false-${item.id}`;
+            falseBtn.innerText = "Sai";
+            falseBtn.onclick = () => selectTFAnswers(item.id, false);
+
+            const feedbackDiv = document.createElement("div");
+            feedbackDiv.id = `feedback-${item.id}`;
+            feedbackDiv.className = "tf-feedback";
+
+            btnsDiv.appendChild(trueBtn);
+            btnsDiv.appendChild(falseBtn);
+
+            itemDiv.appendChild(textDiv);
+            itemDiv.appendChild(btnsDiv);
+            itemDiv.appendChild(feedbackDiv);
+
+            answersContainer.appendChild(itemDiv);
+
+            // Khôi phục trạng thái nếu người dùng quay lại câu này
+            const savedAns = userAnswers[currentQuestionIndex][item.id];
+            if (savedAns !== undefined) {
+                renderTFState(item, savedAns);
+            }
+        });
+    }
+}
+
+// Xử lý chọn Trắc nghiệm
+function selectMultipleOption(index) {
+    if (userAnswers[currentQuestionIndex] !== null) return;
+
+    userAnswers[currentQuestionIndex] = index;
+    const q = quizQuestions[currentQuestionIndex];
+    const buttons = document.querySelectorAll(".option-btn");
+
+    buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.correct) btn.classList.add("correct");
+        if (idx === index && idx !== q.correct) btn.classList.add("wrong");
+    });
+
+    const expText = document.getElementById("explanation-text");
+    expText.innerText = "Giải thích: " + q.explanation;
+    expText.style.display = "block";
+}
+
+// Xử lý chọn Đúng/Sai & Hiển thị kết quả NGAY LẬP TỨC
+function selectTFAnswers(itemId, userChoice) {
+    const q = quizQuestions[currentQuestionIndex];
+    const item = q.items.find(i => i.id === itemId);
+
+    // Lưu lựa chọn
+    userAnswers[currentQuestionIndex][itemId] = userChoice;
+
+    renderTFState(item, userChoice);
+}
+
+function renderTFState(item, userChoice) {
+    const trueBtn = document.querySelector(`.tf-btn-true-${item.id}`);
+    const falseBtn = document.querySelector(`.tf-btn-false-${item.id}`);
+    const feedbackDiv = document.getElementById(`feedback-${item.id}`);
+
+    // Vô hiệu hóa nút sau khi chọn
+    trueBtn.disabled = true;
+    falseBtn.disabled = true;
+
+    const isCorrect = (userChoice === item.answer);
+
+    if (userChoice === true) {
+        trueBtn.classList.add(isCorrect ? "correct" : "wrong");
+    } else {
+        falseBtn.classList.add(isCorrect ? "correct" : "wrong");
+    }
+
+    // Tô màu đáp án đúng nếu trả lời sai
+    if (!isCorrect) {
+        if (item.answer === true) trueBtn.classList.add("correct");
+        else falseBtn.classList.add("correct");
+    }
+
+    // Hiển thị thông báo & giải thích ngay lập tức
+    feedbackDiv.style.display = "block";
+    if (isCorrect) {
+        feedbackDiv.className = "tf-feedback correct";
+        feedbackDiv.innerHTML = `<strong> chính xác!</strong> ${item.exp}`;
+    } else {
+        feedbackDiv.className = "tf-feedback wrong";
+        feedbackDiv.innerHTML = `<strong> Chưa chính xác!</strong> (Đáp án đúng: <strong>${item.answer ? 'Đúng' : 'Sai'}</strong>).<br>${item.exp}`;
+    }
+}
+
+function nextQuestion() {
+    if (currentQuestionIndex < quizQuestions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    } else {
+        showResults();
+    }
+}
+
+function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+    }
+}
+
+function showResults() {
+    document.getElementById("quiz-box").style.display = "none";
+    document.getElementById("score-board").style.display = "block";
+
+    let totalScore = 0;
+
+    quizQuestions.forEach((q, idx) => {
+        if (q.type === "multiple") {
+            if (userAnswers[idx] === q.correct) totalScore++;
+        } else if (q.type === "tf") {
+            // Với câu hỏi Đúng/Sai, tính điểm theo tỷ lệ 4 ý
+            const userAns = userAnswers[idx] || {};
+            let subScore = 0;
+            q.items.forEach(item => {
+                if (userAns[item.id] === item.answer) subScore += 0.25;
+            });
+            totalScore += subScore;
+        }
+    });
+
+    // Làm tròn 2 chữ số thập phân
+    const finalScore = Math.round(totalScore * 100) / 100;
+
+    document.getElementById("final-score").innerText = `${finalScore} / ${quizQuestions.length}`;
+    
+    let comment = "";
+    const percentage = (finalScore / quizQuestions.length) * 100;
+    if (percentage >= 90) comment = "Xuất sắc! Bạn nắm rất chắc toàn bộ kiến thức Lịch sử 12.";
+    else if (percentage >= 70) comment = "Khá tốt! Bạn hãy ôn thêm các câu trả lời chưa chính xác nhé.";
+    else if (percentage >= 50) comment = "Trung bình! Cần dành thêm thời gian học kỹ lại lý thuyết.";
+    else comment = "Hãy cố gắng ôn tập và làm lại bài thi để đạt kết quả tốt hơn!";
+    
+    document.getElementById("score-comment").innerText = comment;
+}
+
+function restartQuiz() {
+    currentQuestionIndex = 0;
+    userAnswers = new Array(quizQuestions.length).fill(null);
+    document.getElementById("quiz-box").style.display = "block";
+    document.getElementById("score-board").style.display = "none";
+    loadQuestion();
+}
+
+// Khởi chạy khi tải trang
+loadQuestion();
+</script>
+
+</body>
+</html>
